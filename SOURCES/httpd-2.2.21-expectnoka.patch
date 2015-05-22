@@ -1,0 +1,41 @@
+From c2b013e286348c29f5f0657d77e13a150fcf902e Mon Sep 17 00:00:00 2001
+From: Cristian Gafton <gafton@amazon.com>
+Date: Thu, 16 Feb 2012 05:31:06 +0000
+Subject: httpd-2.2.15-expectnoka.patch
+
+ modules/http/http_filters.c  |    4 ++++
+ modules/http/http_protocol.c |    4 ++++
+ server/protocol.c            |   11 ++++++++++-
+ 3 files changed, 18 insertions(+), 1 deletions(-)
+  http://svn.apache.org/viewvc?view=revision&revision=888310
+  https://bugzilla.redhat.com/show_bug.cgi?id=606964
+
+  --- httpd-2.2.15/modules/http/http_filters.c.expectnoka
+
+Signed-off-by: Cristian Gafton <gafton@amazon.com>
+---
+ server/protocol.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+diff --git a/server/protocol.c b/server/protocol.c
+index 55468fc..e10ba8f 100644
+--- a/server/protocol.c
++++ b/server/protocol.c
+@@ -1678,6 +1678,14 @@ AP_DECLARE(void) ap_send_interim_response(request_rec *r, int send_headers)
+     status_line = apr_pstrcat(r->pool, AP_SERVER_PROTOCOL, " ", r->status_line, CRLF, NULL);
+     ap_xlate_proto_to_ascii(status_line, strlen(status_line));
+ 
++    /* if we send an interim response, we're no longer in a state of
++     * expecting one.  Also, this could feasibly be in a subrequest,
++     * so we need to propagate the fact that we responded.
++     */
++    for (rr = r; rr != NULL; rr = rr->main) {
++        rr->expecting_100 = 0;
++    }
++
+     x.f = r->connection->output_filters;
+     x.bb = apr_brigade_create(r->pool, r->connection->bucket_alloc);
+ 
+-- 
+1.7.4.5
+

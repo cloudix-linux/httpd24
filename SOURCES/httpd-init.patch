@@ -1,0 +1,13 @@
+diff --git a/build/rpm/httpd.init b/build/rpm/httpd.init
+index c8c6759..cf8aef7 100755
+--- a/build/rpm/httpd.init
++++ b/build/rpm/httpd.init
+@@ -58,7 +58,7 @@ INITLOG_ARGS=""
+ # work correctly with a thread-based MPM; notably PHP will refuse to start.
+ 
+ httpd=${HTTPD-/usr/sbin/httpd}
+-pidfile=${PIDFILE-/var/run/${prog}.pid}
++pidfile=${PIDFILE-/var/run/httpd/${prog}.pid}
+ lockfile=${LOCKFILE-/var/lock/subsys/${prog}}
+ RETVAL=0
+ 
